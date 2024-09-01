@@ -1,0 +1,42 @@
+# Create a New Book
+POST  http://127.0.0.1:8000/api/books/
+Content-Type: application/json
+Authorization: 1d6b7977e95b9be55441ad656eca13c4453133ca
+
+{
+  "title": "New Book",
+  "author": "John Doe"
+}
+
+###
+
+# Retrieve All Books
+GET http://127.0.0.1:8000/api/books/
+Authorization: 1d6b7977e95b9be55441ad656eca13c4453133ca
+
+###
+
+# Retrieve a Single Book
+GET http://127.0.0.1:8000/api/books/1/
+Authorization: 1d6b7977e95b9be55441ad656eca13c4453133ca
+
+###
+
+# Update a Book
+PUT http://127.0.0.1:8000/api/books/1/
+Content-Type: application/json
+Authorization: 1d6b7977e95b9be55441ad656eca13c4453133ca
+
+{
+  "title": "Updated Book Title",
+  "author": "Jane Doe"
+}
+
+###
+
+# Delete a Book
+DELETE http://127.0.0.1:8000/api/books/2/
+Authorization: 1d6b7977e95b9be55441ad656eca13c4453133ca
+
+
+
