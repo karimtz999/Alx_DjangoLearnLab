@@ -1,7 +1,7 @@
 from rest_framework import generics
 from .models import Book
 from .serializers import BookSerializer
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 # CreateView for creating a new Book instance
 class CreateView(generics.CreateAPIView):
