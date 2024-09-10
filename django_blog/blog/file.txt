@@ -1,0 +1,13 @@
+from blog.models import Post
+from django.contrib.auth.models import User
+
+# Create a new user (if not already created)
+user = User.objects.create_user(username='Auba', password='9387923')
+
+# Create a new post
+post = Post.objects.create(title='First Post', content='This is the content of the first post.', author=user)
+
+# Verify the post
+print(post.title)
+
+
