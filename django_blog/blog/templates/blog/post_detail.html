@@ -1,16 +1,25 @@
 <!-- blog/templates/blog/post_detail.html -->
+<h3>Comments</h3>
+<div>
+    {% for comment in post.comments.all %}
+        <p><strong>{{ comment.author }}</strong> ({{ comment.created_at }}): {{ comment.content }}</p>
+        {% if request.user == comment.author %}
+            <a href="{% url 'comment-update' comment.pk %}">Edit</a> |
+            <a href="{% url 'comment-delete' comment.pk %}">Delete</a>
+        {% endif %}
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+</div>
 
-{% extends 'blog/base.html' %}
-
-{% block content %}
-  <h2>{{ post.title }}</h2>
-  <p>{{ post.content }}</p>
-  {% if user.is_authenticated %}
-    {% if user == post.author %}
-      <a href="{% url 'post-update' post.pk %}">Edit</a>
-      <a href="{% url 'post-delete' post.pk %}">Delete</a>
-    {% endif %}
-  {% endif %}
-  <a href="{% url 'post-list' %}">Back to List</a>
-{% endblock %}
-
+{% if user.is_authenticated %}
+    <h4>Leave a comment:</h4>
+    <form method="POST" action="{% url 'add_comment' post.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}">Log in</a> to leave a comment.</p>
+{% endif %}
+w
