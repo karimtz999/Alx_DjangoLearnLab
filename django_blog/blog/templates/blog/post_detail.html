@@ -1,12 +1,15 @@
 <!-- blog/templates/blog/post_detail.html -->
+
 <h3>Comments</h3>
-<div>
+<div class="comments-section">
     {% for comment in post.comments.all %}
-        <p><strong>{{ comment.author }}</strong> ({{ comment.created_at }}): {{ comment.content }}</p>
-        {% if request.user == comment.author %}
-            <a href="{% url 'comment-update' comment.pk %}">Edit</a> |
-            <a href="{% url 'comment-delete' comment.pk %}">Delete</a>
-        {% endif %}
+        <div class="comment">
+            <p><strong>{{ comment.author }}</strong> ({{ comment.created_at|date:"F j, Y, g:i a" }}): {{ comment.content }}</p>
+            {% if request.user == comment.author %}
+                <a href="{% url 'comment-update' comment.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'comment-delete' comment.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            {% endif %}
+        </div>
     {% empty %}
         <p>No comments yet.</p>
     {% endfor %}
@@ -22,4 +25,3 @@
 {% else %}
     <p><a href="{% url 'login' %}">Log in</a> to leave a comment.</p>
 {% endif %}
-w
