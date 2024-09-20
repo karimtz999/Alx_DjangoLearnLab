@@ -1,60 +1,46 @@
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
-from rest_framework import serializers
-from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
+# accounts/serializers.py
 
-CustomUser = get_user_model()
+from rest_framework import serializers
+from django.contrib.auth import get_user_model, authenticate
+from rest_framework.authtoken.models import Token
 
-class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)  # Password should not be returned in responses
-    
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'bio', 'profile_picture']
-    
+        model = get_user_model()
+        fields = ('username', 'email', 'password', 'bio', 'profile_picture')
+
     def create(self, validated_data):
-        # Create a new user using `create_user` method
-        user = User.objects.create_user(
+        # This is where we use the create_user method to ensure password is hashed
+        user = get_user_model().objects.create_user(
             username=validated_data['username'],
-            email=validated_data.get('email', ''),
-            password=validated_data['password'],  # Password is hashed internally by create_user()
+            email=validated_data['email'],
+            password=validated_data['password'],  # This ensures password is properly hashed
             bio=validated_data.get('bio', ''),
             profile_picture=validated_data.get('profile_picture', None)
         )
-        
-        # Create a token for the new user
-        Token.objects.create(user=user)
-        
+        Token.objects.create(user=user)  # Create a token for the user upon registration
         return user
-class LoginSerializer(serializers.Serializer):
+    
+
+class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        username = data.get("username")
-        password = data.get("password")
-        
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if user:
-                if not user.is_active:
-                    raise serializers.ValidationError("User account is disabled.")
-            else:
-                raise serializers.ValidationError("Invalid login credentials.")
-        else:
-            raise serializers.ValidationError("Must include both username and password.")
-        
-        # If the user is valid, get or create the token
-        token, created = Token.objects.get_or_create(user=user)
-        
-        data["user"] = user
-        data["token"] = token.key
-        return data
-    
-class TokenSerializer(serializers.ModelSerializer):
+        user = authenticate(**data)
+        if user and user.is_active:
+            token, created = Token.objects.get_or_create(user=user)
+            return {'token': token.key}
+        raise serializers.ValidationError("Invalid credentials")
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    followers_count = serializers.IntegerField(source='followers.count', read_only=True)
+    following_count = serializers.IntegerField(source='following.count', read_only=True)
+
     class Meta:
-        model = Token
-        fields = ['key', 'user']
+        model = get_user_model()
+        fields = ('username', 'email', 'bio', 'profile_picture', 'followers_count', 'following_count')
