@@ -46,8 +46,12 @@ class LoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Invalid login credentials.")
         else:
             raise serializers.ValidationError("Must include both username and password.")
-
+        
+        # If the user is valid, get or create the token
+        token, created = Token.objects.get_or_create(user=user)
+        
         data["user"] = user
+        data["token"] = token.key
         return data
     
 class TokenSerializer(serializers.ModelSerializer):
