@@ -3,9 +3,25 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework.authtoken.models import Token
+from .models import Post
 
 
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post  # Replace with your actual Post model
+        fields = ('id', 'title', 'content', 'author', 'created_at', 'updated_at')  # Add or modify fields as necessary
 
+    def create(self, validated_data):
+        # You can add any additional logic for creating a post here
+        return Post.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        # You can add any additional logic for updating a post here
+        instance.title = validated_data.get('title', instance.title)
+        instance.content = validated_data.get('content', instance.content)
+        instance.save()
+        return instance
+    
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
