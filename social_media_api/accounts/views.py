@@ -1,4 +1,4 @@
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, PostSerializer
@@ -14,7 +14,33 @@ User = get_user_model()
 
 def accounts_home(request):
     return HttpResponse("Welcome to the accounts home page!")
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def list(self, request, *args, **kwargs):
+        # List all users
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, pk=None):
+        # Retrieve a specific user profile
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+    def follow_user(self, request, pk=None):
+        # Follow a user
+        user_to_follow = get_object_or_404(CustomUser, pk=pk)
+        request.user.following.add(user_to_follow)
+        return Response({"message": f"You are now following {user_to_follow.username}."})
+
+    def unfollow_user(self, request, pk=None):
+        # Unfollow a user
+        user_to_unfollow = get_object_or_404(CustomUser, pk=pk)
+        request.user.following.remove(user_to_unfollow)
+        return Response({"message": f"You have unfollowed {user_to_unfollow.username}."})
+    
 class UserRegistrationView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer

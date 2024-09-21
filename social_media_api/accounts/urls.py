@@ -1,15 +1,17 @@
-# accounts/urls.py
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserRegistrationView, UserLoginView, UserProfileView, UserViewSet, accounts_home
 
-from django.urls import path
-from .views import UserRegistrationView, UserLoginView, UserProfileView, follow_user, unfollow_user, accounts_home
+# Create a router and register the UserViewSet
+router = DefaultRouter()
+router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
     path('', accounts_home, name='accounts-home'),
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', UserLoginView.as_view(), name='login'),
     path('profile/', UserProfileView.as_view(), name='profile'),
-    path('follow/<int:user_id>/', follow_user, name='follow-user'),
-    path('unfollow/<int:user_id>/', unfollow_user, name='unfollow-user'),
+    path('', include(router.urls)),  # Include the router URLs for user management
+    path('follow/<int:pk>/', UserViewSet.as_view({'post': 'follow_user'}), name='follow-user'),
+    path('unfollow/<int:pk>/', UserViewSet.as_view({'post': 'unfollow_user'}), name='unfollow-user'),
 ]
-
-
