@@ -19,3 +19,11 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    @property
+    def follower_count(self):
+        return self.followers.count()
+
+    @property
+    def following_count(self):
+        return self.following.count()

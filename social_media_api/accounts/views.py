@@ -8,8 +8,12 @@ from django.shortcuts import get_object_or_404
 from .models import CustomUser
 from rest_framework.permissions import IsAuthenticated
 from .models import Post
+from django.http import HttpResponse
 
 User = get_user_model()
+
+def accounts_home(request):
+    return HttpResponse("Welcome to the accounts home page!")
 
 class UserRegistrationView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -60,7 +64,6 @@ def user_feed(request):
     posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
 
     # You may want to serialize the posts (assuming you have a PostSerializer)
-    from .serializers import PostSerializer
     serialized_posts = PostSerializer(posts, many=True)
 
     return Response(serialized_posts.data, status=status.HTTP_200_OK)
