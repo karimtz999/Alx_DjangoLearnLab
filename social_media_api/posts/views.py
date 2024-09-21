@@ -14,10 +14,11 @@ class FeedView(generics.ListAPIView):
         return Post.objects.filter(author__in=followed_users).order_by('-created_at')
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-created_at')
+    queryset = Post.objects.filter(author__in=following_users).order_by
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['title', 'content']
     search_fields = ['title', 'content']
 
     def perform_create(self, serializer):
