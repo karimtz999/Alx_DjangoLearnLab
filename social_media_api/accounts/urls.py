@@ -12,6 +12,6 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name='login'),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('', include(router.urls)),  # Include the router URLs for user management
-    path('follow/<int:pk>/', UserViewSet.as_view({'post': 'follow_user'}), name='follow-user'),
-    path('unfollow/<int:pk>/', UserViewSet.as_view({'post': 'unfollow_user'}), name='unfollow-user'),
+    path('follow/<int:user_id>/', UserViewSet.as_view({'post': 'follow_user'}), name='follow-user'),
+    path('unfollow/<int:user_id>//', UserViewSet.as_view({'post': 'unfollow_user'}), name='unfollow-user'),
 ]
